@@ -1,24 +1,46 @@
 "use client";
 
-import React from "react";
+import { trpc } from "@/app/_trpc/client";
+import { ProductContext } from "@/contexts/ProductContext";
+import React, { useContext } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type Inputs = {
 	name: string;
 	price: number;
-	category: string;
+	category: number;
 };
 
 function AddProductModal() {
+	const context = useContext(ProductContext);
+	const categories = trpc.getCategories.useQuery();
+
+	const addProduct = trpc.addProduct.useMutation({
+		onSettled: () => {
+			context?.products?.refetch();
+		},
+	});
+
 	const {
 		register,
 		handleSubmit,
 		watch,
 		formState: { errors },
-	} = useForm<Inputs>();
+		resetField,
+	} = useForm<Inputs>({
+		defaultValues: {
+			category: 1,
+		},
+	});
 
-	const onSubmit: SubmitHandler<Inputs> = (data) => {
-		console.log(data);
+	const onSubmit: SubmitHandler<Inputs> = async (data) => {
+		addProduct.mutate({
+			name: data.name,
+			price: +data.price,
+			category_id: +data.category,
+		});
+		resetField("name");
+		resetField("price");
 	};
 
 	const openModal = () => {
@@ -32,12 +54,14 @@ function AddProductModal() {
 	return (
 		<>
 			{/* Modal */}
-			<button
-				onClick={openModal}
-				className="btn bg-slate-950 text-white btn-lg btn-circle font-bold text-2xl fixed bottom-5 right-5 text-center"
-			>
-				<p>+</p>
-			</button>
+			{categories.data && (
+				<button
+					onClick={openModal}
+					className="btn bg-slate-950 text-white btn-lg btn-circle font-bold text-2xl fixed bottom-5 right-5 text-center"
+				>
+					<p>+</p>
+				</button>
+			)}
 
 			<dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
 				<div className="modal-box">
@@ -95,15 +119,23 @@ function AddProductModal() {
 							</label>
 							<select
 								{...register("category", {
-									required: "Please select a product category",
+									validate: (value) =>
+										value !== null ||
+										value !== undefined ||
+										"Please choose product category",
 								})}
 								className={`select w-full ${
 									errors.category ? "select-error" : "select-bordered"
 								}`}
-								defaultValue={"Han"}
 							>
-								<option value="beverage">Beverage</option>
-								<option value="condiments">Condiments</option>
+								<option disabled selected>
+									Category ---
+								</option>
+								{categories.data?.map((category) => (
+									<option key={category.id} value={category.id}>
+										{category.name}
+									</option>
+								))}
 							</select>
 						</div>
 						<div className="w-full">
