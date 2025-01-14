@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+
+import AddProductModal from "@/components/AddProductModal";
+import React, { useRef } from "react";
 
 function DashboardLayout({
 	children,
@@ -11,6 +14,7 @@ function DashboardLayout({
 				<a className="btn btn-ghost text-xl text-white">Yan-Yan's Store: PMS</a>
 			</div>
 			{children}
+			<AddProductModal />
 		</main>
 	);
 }
