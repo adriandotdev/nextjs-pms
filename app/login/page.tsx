@@ -1,26 +1,52 @@
 "use client";
 
 import React from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+
+type Inputs = {
+	username: string;
+	password: string;
+};
 
 function LoginPage() {
+	const {
+		register,
+		handleSubmit,
+		watch,
+		formState: { errors },
+	} = useForm<Inputs>();
+
+	const onSubmit: SubmitHandler<Inputs> = (data) => {
+		console.log(data);
+	};
+
 	return (
-		<main className="min-h-[100vh] flex flex-col justify-start items-center py-10">
+		<main className="min-h-[100vh] flex flex-col justify-center items-center py-10 px-5">
 			<h1 className="text-2xl font-bold">Yan-Yan Store: PMS</h1>
 			<form
 				className="max-w-[25rem] w-full flex flex-col gap-3"
-				onSubmit={(e) => e.preventDefault()}
+				onSubmit={handleSubmit(onSubmit)}
 			>
 				<div className="w-full">
 					<label className="label font-bold" htmlFor="username">
 						Username
 					</label>
 					<input
-						className="input input-bordered w-full"
+						className={`input w-full ${
+							errors.username ? "input-error" : "input-bordered"
+						}`}
 						type="text"
-						name="username"
 						id="username"
 						placeholder="Please provide your username"
+						{...register("username", {
+							required: "Please provide your username",
+						})}
 					/>
+					{errors.username && (
+						<small className="text-error font-medium">
+							{errors.username.message}
+						</small>
+					)}
 				</div>
 
 				<div className="w-full">
@@ -28,12 +54,21 @@ function LoginPage() {
 						Password
 					</label>
 					<input
-						className="input input-bordered w-full"
-						type="password"
-						name="password"
+						className={`input w-full ${
+							errors.password ? "input-error" : "input-bordered"
+						}`}
+						type="text"
 						id="password"
 						placeholder="Please provide your password"
+						{...register("password", {
+							required: "Please provide your password",
+						})}
 					/>
+					{errors.password && (
+						<small className="text-error font-medium">
+							{errors.password.message}
+						</small>
+					)}
 				</div>
 
 				<div className="w-full">
