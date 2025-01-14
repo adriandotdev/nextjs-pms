@@ -14,7 +14,23 @@ datasource db {
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  name    String?  @db.VarChar(255)
+  id       Int     @id @default(autoincrement())
+  name     String? @db.VarChar(255)
   password String  @db.VarChar(255)
+}
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(255)
+  date_created  DateTime  @default(now())
+  date_modified DateTime  @default(now())
+  Product       Product[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  price       Decimal  @db.Decimal(10, 2)
+  category    Category @relation(fields: [category_id], references: [id])
+  category_id Int
 }
