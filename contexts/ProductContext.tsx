@@ -1,8 +1,13 @@
 import { trpc } from "@/app/_trpc/client";
 import { type UseTRPCQueryResult } from "@trpc/react-query/shared";
-import { createContext } from "react";
+import React, {
+	createContext,
+	Dispatch,
+	SetStateAction,
+	useState,
+} from "react";
 
-type Product = {
+export type Product = {
 	name: string;
 	price: number;
 	category_id: number;
@@ -11,9 +16,15 @@ type Product = {
 
 interface ProductContextType {
 	products?: UseTRPCQueryResult<Product[], Error>;
+	productToDelete?: Product;
+	setProductToDelete: Dispatch<SetStateAction<Product | undefined>>;
 }
 
-export const ProductContext = createContext<ProductContextType | null>(null);
+export const ProductContext = createContext<ProductContextType>({
+	products: undefined,
+	productToDelete: undefined,
+	setProductToDelete: () => {}, // Default no-op function
+});
 
 export const ProductProvider = ({
 	children,
@@ -24,9 +35,11 @@ export const ProductProvider = ({
 		Product[],
 		Error
 	>;
-
+	const [productToDelete, setProductToDelete] = useState<Product | undefined>();
 	return (
-		<ProductContext.Provider value={{ products: products }}>
+		<ProductContext.Provider
+			value={{ products: products, productToDelete, setProductToDelete }}
+		>
 			{children}
 		</ProductContext.Provider>
 	);

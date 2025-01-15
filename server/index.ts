@@ -25,6 +25,15 @@ export const appRouter = router({
 				},
 			});
 		}),
+	removeProductByID: publicProcedure
+		.input(z.object({ id: z.number().optional() }))
+		.mutation(async (opts) => {
+			await prisma.product.delete({
+				where: {
+					id: opts.input.id,
+				},
+			});
+		}),
 	getCategories: publicProcedure.query(async () => {
 		const result = await prisma.category.findMany();
 		return result;
