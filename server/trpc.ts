@@ -10,7 +10,7 @@ export const createContext = ({
 	return { req, res };
 };
 
-const t = initTRPC.context<typeof createContext>().create();
+const t = initTRPC.create();
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
