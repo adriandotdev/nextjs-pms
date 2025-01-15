@@ -99,8 +99,10 @@ function AddProductModal() {
 								className={`input w-full ${
 									errors.price ? "input-error" : "input-bordered"
 								}`}
-								type="text"
 								id="price"
+								type="text"
+								inputMode="decimal"
+								pattern="^\d+(\.\d{1,2})?$"
 								placeholder="Please provide the product price"
 								{...register("price", {
 									required: "Please provide the product price",

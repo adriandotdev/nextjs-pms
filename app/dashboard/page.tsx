@@ -4,6 +4,14 @@ import React, { useContext } from "react";
 
 function DashboardPage() {
 	const context = useContext(ProductContext);
+
+	const formatCurrency = (amount: number) => {
+		return new Intl.NumberFormat("en-PH", {
+			style: "currency",
+			currency: "PHP",
+		}).format(amount);
+	};
+
 	return (
 		<div className="max-w-[100vw] w-full px-2 py-3 min-h-[90vh] ">
 			<div className="w-full">
@@ -23,9 +31,9 @@ function DashboardPage() {
 							key={product.id}
 							className="border border-slate-950 border-opacity-20 p-5 rounded-2xl"
 						>
-							<h1 className="text-bold text-xl font-bold ">{product.name}</h1>
-							<p className="text-green-600 font-bold text-2xl">
-								{product.price}
+							<h1 className="text-bold text-2xl font-bold ">{product.name}</h1>
+							<p className="text-green-600 font-bold text-xl">
+								{formatCurrency(product.price)}
 							</p>
 						</div>
 					))}
