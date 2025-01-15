@@ -70,10 +70,13 @@ export const appRouter = router({
 				});
 			}
 
-			(await cookies()).set("test", "testvalue");
+			(await cookies()).set("session", "session-value");
 
 			// return "SUCCESS";
 		}),
+	logout: publicProcedure.mutation(async () => {
+		(await cookies()).delete("session");
+	}),
 });
 
 export type AppRouter = typeof appRouter;

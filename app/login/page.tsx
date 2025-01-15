@@ -15,7 +15,7 @@ function LoginPage() {
 		register,
 		handleSubmit,
 		watch,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 	} = useForm<Inputs>();
 	const router = useRouter();
 
@@ -69,7 +69,7 @@ function LoginPage() {
 						className={`input w-full ${
 							errors.password ? "input-error" : "input-bordered"
 						}`}
-						type="text"
+						type="password"
 						id="password"
 						placeholder="Please provide your password"
 						{...register("password", {
@@ -84,7 +84,13 @@ function LoginPage() {
 				</div>
 
 				<div className="w-full">
-					<button className="w-full btn btn-outline">Login</button>
+					<button className="w-full btn btn-outline">
+						{isSubmitting ? (
+							<span className="loading loading-spinner"></span>
+						) : (
+							"Login"
+						)}
+					</button>
 				</div>
 			</form>
 		</main>
