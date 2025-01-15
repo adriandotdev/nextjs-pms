@@ -1,6 +1,9 @@
 import { publicProcedure, router } from "./trpc";
 
 import { PrismaClient } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import { cookies } from "next/headers";
+import { redirect, RedirectType } from "next/navigation";
 
 const prisma = new PrismaClient();
 
@@ -38,6 +41,39 @@ export const appRouter = router({
 		const result = await prisma.category.findMany();
 		return result;
 	}),
+	login: publicProcedure
+		.input(z.object({ username: z.string(), password: z.string() }))
+		.mutation(async (opts) => {
+			const user = await prisma.user.findFirst({
+				select: {
+					id: true,
+					name: true,
+					username: true,
+					password: true,
+				},
+				where: {
+					username: opts.input.username,
+				},
+			});
+
+			if (!user) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Invalid Credentials",
+				});
+			}
+
+			if (user && user.password !== opts.input.password) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Invalid Credentials",
+				});
+			}
+
+			(await cookies()).set("test", "testvalue");
+
+			// return "SUCCESS";
+		}),
 });
 
 export type AppRouter = typeof appRouter;

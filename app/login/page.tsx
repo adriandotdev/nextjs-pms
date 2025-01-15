@@ -2,6 +2,8 @@
 
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { trpc } from "../_trpc/client";
+import { useRouter } from "next/navigation";
 
 type Inputs = {
 	username: string;
@@ -15,9 +17,19 @@ function LoginPage() {
 		watch,
 		formState: { errors },
 	} = useForm<Inputs>();
+	const router = useRouter();
+
+	const login = trpc.login.useMutation({
+		onSuccess: () => {
+			router.replace("/dashboard");
+		},
+	});
 
 	const onSubmit: SubmitHandler<Inputs> = (data) => {
-		console.log(data);
+		const loginResult = login.mutate({
+			username: data.username,
+			password: data.password,
+		});
 	};
 
 	return (
