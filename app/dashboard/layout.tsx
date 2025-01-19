@@ -6,6 +6,7 @@ import React, { useRef } from "react";
 import { trpc } from "../_trpc/client";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import AddUserModal from "@/components/AddUserModal";
 
 function DashboardLayout({
 	children,
@@ -46,6 +47,7 @@ function DashboardLayout({
 				{children}
 				<AddProductModal />
 				<Sidebar logout={logout} />
+				<AddUserModal />
 			</main>
 		</ProductProvider>
 	);

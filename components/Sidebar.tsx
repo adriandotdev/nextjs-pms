@@ -1,6 +1,15 @@
 import React from "react";
 
 function Sidebar({ logout }: { logout: any }) {
+	const openAddNewUserModal = () => {
+		const dialog = document.getElementById(
+			"add_user_modal"
+		) as HTMLDialogElement;
+		const checkbox = document.getElementById("my-drawer-4") as HTMLInputElement;
+		checkbox.checked = false;
+		dialog.showModal();
+	};
+
 	return (
 		<div className="drawer drawer-end ">
 			<input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -17,7 +26,7 @@ function Sidebar({ logout }: { logout: any }) {
 					<li className="font-bold text-lg">
 						<a>Add Category</a>
 					</li>
-					<li className="font-bold text-lg">
+					<li className="font-bold text-lg" onClick={openAddNewUserModal}>
 						<a>Add New User</a>
 					</li>
 					<li
