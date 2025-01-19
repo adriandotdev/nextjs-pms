@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 
 import {
 	ProductContext,
@@ -70,7 +70,7 @@ function Product({ product }: { product: ProductType }) {
 				onTouchStart={handleMouseUp}
 				onTouchEnd={handleMouseDown}
 				key={product.id}
-				className="border border-slate-950 border-opacity-20 p-5 rounded-2xl"
+				className="border border-slate-950 border-opacity-20 p-5 rounded-2xl active:bg-slate-300"
 			>
 				<h1 className="text-bold text-2xl font-bold ">{product.name}</h1>
 				<p className="text-green-600 font-bold text-xl">

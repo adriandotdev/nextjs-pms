@@ -31,10 +31,9 @@ export const ProductProvider = ({
 }: {
 	children: Readonly<React.ReactNode>;
 }) => {
-	const products = trpc.getProducts.useQuery() as UseTRPCQueryResult<
-		Product[],
-		Error
-	>;
+	const products = trpc.getProducts.useQuery({
+		product_name: "",
+	}) as UseTRPCQueryResult<Product[], Error>;
 	const [productToDelete, setProductToDelete] = useState<Product | undefined>();
 	return (
 		<ProductContext.Provider

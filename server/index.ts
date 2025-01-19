@@ -3,18 +3,32 @@ import { publicProcedure, router } from "./trpc";
 import { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
+
+import { SignJWT } from "jose";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
 import { z } from "zod";
 
 export const appRouter = router({
-	getProducts: publicProcedure.query(async () => {
-		const result = await prisma.product.findMany();
+	getProducts: publicProcedure
+		.input(z.object({ product_name: z.string().optional() }))
+		.query(async (opts) => {
+			let result;
 
-		return result;
-	}),
+			if (!opts.input.product_name) result = await prisma.product.findMany();
+			else
+				result = prisma.product.findMany({
+					where: {
+						name: {
+							contains: opts.input.product_name,
+							mode: "insensitive",
+						},
+					},
+				});
+			return result;
+		}),
 	addProduct: publicProcedure
 		.input(
 			z.object({ name: z.string(), price: z.number(), category_id: z.number() })
@@ -70,13 +84,33 @@ export const appRouter = router({
 				});
 			}
 
-			(await cookies()).set("session", "session-value");
+			const accessTokenEncodedKey = new TextEncoder().encode("secret-key");
+			const token = new SignJWT({ id: user.id, username: user.username })
+				.setProtectedHeader({ alg: "HS256" })
+				.setIssuedAt()
+				.sign(accessTokenEncodedKey);
+
+			(await cookies()).set("session", await token, {
+				secure: true,
+				sameSite: "strict",
+			});
 
 			// return "SUCCESS";
 		}),
 	logout: publicProcedure.mutation(async () => {
 		(await cookies()).delete("session");
 	}),
+	searchProduct: publicProcedure
+		.input(z.object({ product: z.string() }))
+		.mutation(async (opts) => {
+			await prisma.product.findMany({
+				where: {
+					name: {
+						equals: opts.input.product,
+					},
+				},
+			});
+		}),
 });
 
 export type AppRouter = typeof appRouter;
