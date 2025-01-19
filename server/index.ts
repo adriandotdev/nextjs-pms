@@ -17,7 +17,12 @@ export const appRouter = router({
 		.query(async (opts) => {
 			let result;
 
-			if (!opts.input.product_name) result = await prisma.product.findMany();
+			if (!opts.input.product_name)
+				result = await prisma.product.findMany({
+					orderBy: {
+						name: "asc",
+					},
+				});
 			else
 				result = prisma.product.findMany({
 					where: {
@@ -25,6 +30,9 @@ export const appRouter = router({
 							contains: opts.input.product_name,
 							mode: "insensitive",
 						},
+					},
+					orderBy: {
+						name: "asc",
 					},
 				});
 			return result;

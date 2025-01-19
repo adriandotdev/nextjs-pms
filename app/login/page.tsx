@@ -25,7 +25,8 @@ function LoginPage() {
 		},
 	});
 
-	const onSubmit: SubmitHandler<Inputs> = (data) => {
+	const onSubmit: SubmitHandler<Inputs> = async (data) => {
+		await new Promise((resolve) => setTimeout(resolve, 2000));
 		const loginResult = login.mutate({
 			username: data.username,
 			password: data.password,
@@ -84,9 +85,12 @@ function LoginPage() {
 				</div>
 
 				<div className="w-full">
-					<button className="w-full btn btn-outline">
+					<button
+						className="w-full btn btn-outline disabled:bg-slate-900"
+						disabled={isSubmitting}
+					>
 						{isSubmitting ? (
-							<span className="loading loading-spinner"></span>
+							<span className="loading loading-spinner text-white"></span>
 						) : (
 							"Login"
 						)}
