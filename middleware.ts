@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest, response: NextResponse) {
 	const path = request.nextUrl;
 
 	const accessTokenEncodedKey = new TextEncoder().encode("secret-key");
-	const token = (await cookies()).get("session");
+	const token = (await cookies()).get("session") as any;
 
 	switch (path.pathname) {
 		case "/dashboard":
