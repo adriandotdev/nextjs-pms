@@ -51,6 +51,14 @@ function AddProductModal() {
 		modalElement?.showModal();
 	};
 
+	const closeModal = () => {
+		const modalElement = document.getElementById(
+			"my_modal_5"
+		) as HTMLDialogElement | null;
+
+		modalElement?.close();
+	};
+
 	return (
 		<>
 			{/* Modal */}
@@ -63,8 +71,12 @@ function AddProductModal() {
 				</button>
 			)}
 
-			<dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-				<div className="modal-box">
+			<dialog
+				id="my_modal_5"
+				className="modal modal-bottom sm:modal-middle"
+				onClick={closeModal}
+			>
+				<div className="modal-box" onClick={(e) => e.stopPropagation()}>
 					<h3 className="font-bold text-lg">New Product</h3>
 					<form
 						className=" w-full flex flex-col gap-1"
