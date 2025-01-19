@@ -1,15 +1,21 @@
 "use client";
 import Product from "@/components/Product";
-import { ProductContext } from "@/contexts/ProductContext";
+import {
+	ProductContext,
+	Product as ProductType,
+} from "@/contexts/ProductContext";
 import React, { useContext, useState } from "react";
 import { trpc } from "../_trpc/client";
+import { type UseTRPCQueryResult } from "@trpc/react-query/shared";
 
 function DashboardPage() {
 	const context = useContext(ProductContext);
 	const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout>();
 	const [test, setTest] = useState("");
 
-	const testProducts = trpc.getProducts.useQuery({ product_name: test });
+	const testProducts = trpc.getProducts.useQuery({
+		product_name: test,
+	}) as UseTRPCQueryResult<ProductType[], Error>;
 
 	const searchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (searchTimeout) {
