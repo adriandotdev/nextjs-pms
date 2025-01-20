@@ -86,7 +86,7 @@ function LoginPage() {
 
 				<div className="w-full">
 					<button
-						className="w-full btn btn-outline disabled:bg-slate-900"
+						className="w-full btn btn-outline disabled:bg-slate-900 mt-5"
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? (

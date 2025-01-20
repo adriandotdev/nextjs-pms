@@ -2,7 +2,7 @@
 
 import { trpc } from "@/app/_trpc/client";
 import { ProductContext } from "@/contexts/ProductContext";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type Inputs = {
@@ -21,12 +21,16 @@ function AddProductModal() {
 		},
 	});
 
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertTimeout, setAlertTimeout] = useState<NodeJS.Timeout>();
+
 	const {
 		register,
 		handleSubmit,
 		watch,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 		resetField,
+		reset,
 	} = useForm<Inputs>({
 		defaultValues: {
 			category: 1,
@@ -34,13 +38,18 @@ function AddProductModal() {
 	});
 
 	const onSubmit: SubmitHandler<Inputs> = async (data) => {
+		if (alertTimeout) clearTimeout(alertTimeout);
+		setShowAlert(true);
+		const timeout = setTimeout(() => {
+			setShowAlert(false);
+		}, 2000);
+		setAlertTimeout(timeout);
 		addProduct.mutate({
 			name: data.name,
 			price: +data.price,
 			category_id: +data.category,
 		});
-		resetField("name");
-		resetField("price");
+		reset();
 	};
 
 	const openModal = () => {
@@ -57,6 +66,7 @@ function AddProductModal() {
 		) as HTMLDialogElement | null;
 
 		modalElement?.close();
+		reset();
 	};
 
 	return (
@@ -76,6 +86,13 @@ function AddProductModal() {
 				className="modal modal-bottom sm:modal-middle"
 				onClick={closeModal}
 			>
+				{showAlert && (
+					<div className="toast toast-top toast-end pr-5">
+						<div className="alert bg-green-700 text-white font-bold outline-none border-none rounded-lg">
+							<span>Product successfully added!</span>
+						</div>
+					</div>
+				)}
 				<div className="modal-box" onClick={(e) => e.stopPropagation()}>
 					<h3 className="font-bold text-lg">New Product</h3>
 					<form
@@ -114,10 +131,14 @@ function AddProductModal() {
 								id="price"
 								type="text"
 								inputMode="decimal"
-								pattern="^\d+(\.\d{1,2})?$"
 								placeholder="Please provide the product price"
 								{...register("price", {
 									required: "Please provide the product price",
+									pattern: {
+										value: /^\d+(\.\d{0,2})?$/,
+										message:
+											"Enter a valid price with up to two decimal places",
+									},
 								})}
 							/>
 							{errors.price && (
@@ -153,7 +174,16 @@ function AddProductModal() {
 							</select>
 						</div>
 						<div className="w-full">
-							<button className="w-full btn btn-outline mt-5">Add</button>
+							<button
+								disabled={isSubmitting}
+								className="w-full btn btn-outline mt-5"
+							>
+								{isSubmitting ? (
+									<span className="loading loading-spinner text-white"></span>
+								) : (
+									"Add"
+								)}
+							</button>
 						</div>
 					</form>
 					<div className="w-full">

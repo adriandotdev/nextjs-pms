@@ -16,8 +16,20 @@ datasource db {
 model User {
   id       Int     @id @default(autoincrement())
   name     String? @db.VarChar(255)
+  role     Role @relation(fields: [role_id], references: [id])
+  role_id  Int
   username String? @unique @db.VarChar(255)
   password String  @db.VarChar(255)
+  date_created DateTime @default(now())
+  date_modified DateTime @default(now())
+}
+
+model Role {
+  id Int @id @default(autoincrement())
+  role String @db.VarChar(255)
+  date_created DateTime @default(now())
+  date_modified DateTime @default(now())
+  User User[]
 }
 
 model Category {

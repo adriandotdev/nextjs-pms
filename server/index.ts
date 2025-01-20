@@ -119,6 +119,31 @@ export const appRouter = router({
 				},
 			});
 		}),
+
+	getRoles: publicProcedure.query(async () => {
+		const result = await prisma.role.findMany();
+
+		return result;
+	}),
+	registerUser: publicProcedure
+		.input(
+			z.object({
+				name: z.string(),
+				username: z.string(),
+				password: z.string(),
+				role_id: z.number(),
+			})
+		)
+		.mutation(async (opts) => {
+			await prisma.user.create({
+				data: {
+					name: opts.input.name,
+					username: opts.input.username,
+					password: opts.input.password,
+					role_id: opts.input.role_id,
+				},
+			});
+		}),
 });
 
 export type AppRouter = typeof appRouter;
