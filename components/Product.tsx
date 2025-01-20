@@ -9,13 +9,25 @@ import { trpc } from "@/app/_trpc/client";
 function Product({ product }: { product: ProductType }) {
 	const context = useContext(ProductContext);
 	const [timer, setTimer] = useState<any>();
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertTimeout, setAlertTimeout] = useState<NodeJS.Timeout>();
+	const [isDeleteButtonDisabled, setDisableDeleteButton] = useState(false);
 
 	// TRPC
 	const deleteProductByID = trpc.removeProductByID.useMutation({
-		onSettled: () => {
-			context.products?.refetch();
-
-			closeModal();
+		onSettled: async () => {
+			if (alertTimeout) clearTimeout(alertTimeout);
+			setShowAlert(true);
+			const timeout = setTimeout(() => {
+				setShowAlert(false);
+				context.products?.refetch();
+				closeModal();
+				setDisableDeleteButton(false);
+			}, 2000);
+			setAlertTimeout(timeout);
+		},
+		onError: async () => {
+			setDisableDeleteButton(false);
 		},
 	});
 
@@ -59,6 +71,7 @@ function Product({ product }: { product: ProductType }) {
 	};
 
 	const deleteProduct = () => {
+		setDisableDeleteButton(true);
 		deleteProductByID.mutate({ id: context?.productToDelete?.id });
 	};
 
@@ -72,16 +85,30 @@ function Product({ product }: { product: ProductType }) {
 				key={product.id}
 				className="border border-slate-950 border-opacity-20 p-5 rounded-2xl active:bg-slate-300"
 			>
-				<h1 className="text-bold text-2xl font-bold ">{product.name}</h1>
-				<p className="text-green-600 font-bold text-xl">
-					{formatCurrency(product.price)}
-				</p>
+				<div className="flex justify-between items-start">
+					<div>
+						<h1 className="text-bold text-2xl font-bold ">{product.name}</h1>
+						<p className="text-green-600 font-bold text-xl">
+							{formatCurrency(product.price)}
+						</p>
+					</div>
+					<div className="bg-slate-950 text-white font-bold py-1 px-2 rounded-badge text-sm">
+						{product.category.name}
+					</div>
+				</div>
 			</div>
 			{/* Open the modal using document.getElementById('ID').showModal() method */}
 			<dialog
 				id="delete_product_modal"
 				className="modal modal-bottom sm:modal-middle"
 			>
+				{showAlert && (
+					<div className="toast toast-top toast-end pr-5">
+						<div className="alert bg-green-700 text-white font-bold outline-none border-none rounded-lg">
+							<span>Product successfully deleted!</span>
+						</div>
+					</div>
+				)}
 				<div className="modal-box">
 					<h3 className="font-bold text-lg">
 						Are you sure you want to remove this product?
@@ -92,6 +119,7 @@ function Product({ product }: { product: ProductType }) {
 					<div className="flex flex-col w-full mt-5 gap-5">
 						<div className="w-full">
 							<button
+								disabled={isDeleteButtonDisabled}
 								onClick={deleteProduct}
 								className="btn bg-red-800 hover:bg-red-950 w-full text-white"
 							>

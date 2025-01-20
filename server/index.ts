@@ -17,14 +17,29 @@ export const appRouter = router({
 		.query(async (opts) => {
 			let result;
 
-			if (!opts.input.product_name)
+			if (!opts.input.product_name) {
 				result = await prisma.product.findMany({
+					include: {
+						category: {
+							select: {
+								name: true,
+							},
+						},
+					},
 					orderBy: {
 						name: "asc",
 					},
 				});
-			else
+				console.log(result);
+			} else
 				result = prisma.product.findMany({
+					include: {
+						category: {
+							select: {
+								name: true,
+							},
+						},
+					},
 					where: {
 						name: {
 							contains: opts.input.product_name,

@@ -12,6 +12,7 @@ export type Product = {
 	price: number;
 	category_id: number;
 	id: number;
+	category: { name: string };
 };
 
 interface ProductContextType {
