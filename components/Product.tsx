@@ -87,12 +87,14 @@ function Product({ product }: { product: ProductType }) {
 			>
 				<div className="flex justify-between items-start">
 					<div>
-						<h1 className="text-bold text-2xl font-bold ">{product.name}</h1>
-						<p className="text-green-600 font-bold text-xl">
+						<h1 className="text-bold text-2xl font-bold select-none">
+							{product.name}
+						</h1>
+						<p className="text-green-600 font-bold text-xl select-none">
 							{formatCurrency(product.price)}
 						</p>
 					</div>
-					<div className="bg-slate-950 text-white font-bold py-1 px-2 rounded-badge text-sm">
+					<div className="bg-slate-950 text-white font-bold py-1 px-2 rounded-badge text-sm select-none">
 						{product.category.name}
 					</div>
 				</div>
