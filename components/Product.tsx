@@ -112,7 +112,7 @@ function Product({ product }: { product: ProductType }) {
 					</div>
 				)}
 				<div className="modal-box">
-					<h3 className="font-bold text-lg">
+					<h3 className="font-bold text-lg select-none">
 						Are you sure you want to remove this product?
 					</h3>
 					<h1 className="py-4 font-bold text-3xl text-red-500">
